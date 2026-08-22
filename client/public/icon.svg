@@ -1,0 +1,23 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ExpiryScan">
+  <rect width="512" height="512" rx="112" fill="#0F172A"/>
+  <rect width="512" height="512" rx="112" fill="url(#g)" fill-opacity="0.35"/>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#14B8A6"/>
+      <stop offset="1" stop-color="#0F172A" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- capsule -->
+  <g transform="translate(256 246) rotate(-45)">
+    <rect x="-120" y="-46" width="240" height="92" rx="46" fill="#F8FAFC"/>
+    <path d="M0 -46 H74 A46 46 0 0 1 74 46 H0 Z" fill="#14B8A6"/>
+    <line x1="0" y1="-46" x2="0" y2="46" stroke="#0F172A" stroke-width="4" stroke-opacity="0.15"/>
+  </g>
+  <!-- scan corner brackets -->
+  <g stroke="#5EEAD4" stroke-width="14" stroke-linecap="round" fill="none">
+    <path d="M120 150 V120 H150"/>
+    <path d="M392 150 V120 H362"/>
+    <path d="M120 362 V392 H150"/>
+    <path d="M392 362 V392 H362"/>
+  </g>
+</svg>
