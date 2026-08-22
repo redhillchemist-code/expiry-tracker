@@ -39,8 +39,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { StatusBadge } from "@/components/status-badge";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest, API_BASE } from "@/lib/queryClient";
+import { apiRequest } from "@/lib/queryClient";
 import { formatDate, formatDaysUntil } from "@/lib/expiry";
+import { getActiveDepartment } from "@/lib/department";
 import type { BatchWithProduct, ExpiryStatus } from "@shared/schema";
 
 type StatusFilter = "all" | ExpiryStatus;
@@ -54,6 +55,7 @@ export default function InventoryPage() {
   const [editQuantity, setEditQuantity] = useState("1");
   const [editExpiry, setEditExpiry] = useState("");
   const [deleting, setDeleting] = useState<BatchWithProduct | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   const { data: batches, isLoading } = useQuery<BatchWithProduct[]>({ queryKey: ["/api/batches"] });
 
@@ -97,6 +99,28 @@ export default function InventoryPage() {
     onError: () => toast({ title: "Could not remove batch", variant: "destructive" }),
   });
 
+  async function handleExport() {
+    setIsExporting(true);
+    try {
+      const res = await apiRequest("GET", "/api/export");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const department = getActiveDepartment();
+      const suffix = department ? `-${department}` : "";
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `expiry-tracker-export${suffix}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      toast({ title: "Could not export CSV", variant: "destructive" });
+    } finally {
+      setIsExporting(false);
+    }
+  }
+
   function openEdit(b: BatchWithProduct) {
     setEditing(b);
     setEditQuantity(String(b.quantity));
@@ -119,11 +143,15 @@ export default function InventoryPage() {
           </h1>
           <p className="text-sm text-muted-foreground">All scanned batches, sorted by expiry date.</p>
         </div>
-        <Button variant="outline" asChild className="gap-2" data-testid="button-export-csv">
-          <a href={`${API_BASE}/api/export`} target="_blank" rel="noopener noreferrer">
-            <Download className="h-4 w-4" />
-            Export CSV
-          </a>
+        <Button
+          variant="outline"
+          className="gap-2"
+          data-testid="button-export-csv"
+          onClick={handleExport}
+          disabled={isExporting}
+        >
+          <Download className="h-4 w-4" />
+          {isExporting ? "Exporting\u2026" : "Export CSV"}
         </Button>
       </div>
 
