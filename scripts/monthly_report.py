@@ -51,6 +51,13 @@ import os
 import sys
 import argparse
 from datetime import date, datetime
+from zoneinfo import ZoneInfo
+
+# Always compute "today" in the pharmacy's own timezone, never the calling process's
+# ambient/system timezone -- the caller (background cron subagent, interactive session,
+# etc.) may default to UTC or something else entirely, which would silently shift "today"
+# by a day right around the 8am Brisbane run time.
+PHARMACY_TZ = ZoneInfo("Australia/Brisbane")
 
 import requests
 
@@ -289,7 +296,7 @@ def main():
 
     load_env_file(ENV_PATH)
 
-    today = datetime.strptime(args.today, "%Y-%m-%d").date() if args.today else date.today()
+    today = datetime.strptime(args.today, "%Y-%m-%d").date() if args.today else datetime.now(PHARMACY_TZ).date()
 
     departments_due = []
     any_db_found = False
